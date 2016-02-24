@@ -1,0 +1,30 @@
+/* Constrain the width */
+.container {
+  width: auto;
+  max-width: 1200px;
+  padding: 0 40px;
+  margin: 0 auto;
+}
+
+/* Center the footer text */
+.container .text-muted {
+  margin: 20px 0;
+  text-align: center;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+}
+
+.footer {
+  height: 60px;
+  background-color: #f5f5f5;
+}
