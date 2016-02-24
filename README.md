@@ -2,4 +2,9 @@
 
 ![UIKit](thumbnail.jpg)
 
-UIkit is the a [UIKit](http://getuikit.com/) theme. A lightweight and modular front-end framework for developing fast and powerful web interfaces.
+UIkit is a [UIKit](http://getuikit.com/) based theme for [Grav](http://getgrav.org/). A lightweight and modular front-end framework for developing fast and powerful web interfaces.
+
+## Thanks
+
+UIKit - [UIKit](http://getuikit.com/)
+jQuery - [jQuery](http://jquery.com/)
