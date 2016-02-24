@@ -1,0 +1,35 @@
+name: UIKit
+version: 1.0.0
+description: "UIkit is a lightweight and modular front-end framework for developing fast and powerful web interfaces."
+icon: empire
+author:
+  name: A+ Media
+  email: hello@aplusmedia.org
+  url: http://aplusmedia.org
+homepage: https://github.com/carve/grav-theme-uikit
+demo: http://grav.aplusmedia.org/uikit-demo
+keywords: uikit, theme, core, modern, fast, responsive, html5, css3
+bugs: https://github.com/carve/grav-theme-uikit/issues
+license: MIT
+
+form:
+  validation: loose
+  fields:
+    default_lang:
+      type: text
+      size: x-small
+      label: Default lang
+      default: 'en'
+      validate:
+        type: text
+
+    dropdown.enabled:
+        type: toggle
+        label: Dropdown in navbar
+        highlight: 1
+        default: 1
+        options:
+          1: Enabled
+          0: Disabled
+        validate:
+          type: bool
