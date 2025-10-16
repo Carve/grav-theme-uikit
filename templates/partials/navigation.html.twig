@@ -1,48 +1,110 @@
-{% macro loop(page) %}
-    {% for p in page.children.visible %}
-        {% set current_page = (p.active or p.activeChild) ? 'selected' : '' %}
-        {% if p.children.visible.count > 0 %}
-            <li class="has-children {{ current_page }}">
-                <a href="{{ p.url }}">
-                    {% if p.header.icon %}<i class="fa fa-{{ p.header.icon }}"></i>{% endif %}
-                    {{ p.menu }}
-                </a>
-                <ul>
-                    {{ _self.loop(p) }}
-                </ul>
-            </li>
+{% macro icon(icon) %}
+    {% if icon %}
+        {% if 'fa-' in icon %}
+            {% set classes = icon %}
         {% else %}
-            <li class="{{ current_page }}">
-                <a href="{{ p.url }}">
-                    {% if p.header.icon %}<i class="fa fa-{{ p.header.icon }}"></i>{% endif %}
-                    {{ p.menu }}
-                </a>
-            </li>
+            {% set cleaned = icon|replace({'fa ': '', 'fa-': ''}) %}
+            {% if ' ' in cleaned %}
+                {% set parts = cleaned|split(' ') %}
+            {% elseif ':' in cleaned %}
+                {% set parts = cleaned|split(':') %}
+            {% elseif '/' in cleaned %}
+                {% set parts = cleaned|split('/') %}
+            {% else %}
+                {% set parts = [cleaned] %}
+            {% endif %}
+            {% set style = parts|length > 1 ? parts[0] : 'solid' %}
+            {% set name = parts|last %}
+            {% set classes = 'fa-' ~ style ~ ' fa-' ~ name %}
         {% endif %}
+        <i class="{{ classes|trim }}"></i>
+    {% endif %}
+{% endmacro %}
+
+{% macro navbar_children(page) %}
+    {% import _self as nav %}
+    {% for child in page.children.visible %}
+        {% set is_active = (child.active or child.activeChild) ? 'uk-active' : '' %}
+        {% set has_children = child.children.visible.count > 0 %}
+        <li class="{{ has_children ? 'uk-parent ' : '' }}{{ is_active }}">
+            <a href="{{ child.url }}">
+                {{ nav.icon(child.header.icon) }}
+                {{ child.menu }}
+            </a>
+            {% if has_children %}
+                <ul class="uk-nav-sub">
+                    {{ nav.navbar_children(child) }}
+                </ul>
+            {% endif %}
+        </li>
     {% endfor %}
 {% endmacro %}
 
-<ul class="uk-navbar-nav uk-hidden-small">
-    {% if theme_config.dropdown.enabled %}
-        {{ _self.loop(pages) }}
-    {% else %}
-        {% for page in pages.children.visible %}
-            {% set current_page = (page.active or page.activeChild) ? 'selected' : '' %}
-            <li class="{{ current_page }}">
-                <a href="{{ page.url }}">
-                    {% if page.header.icon %}<i class="fa fa-{{ page.header.icon }}"></i>{% endif %}
-                    {{ page.menu }}
+{% macro navbar_items(pages, dropdown_enabled) %}
+    {% import _self as nav %}
+    {% for page in pages.children.visible %}
+        {% set is_active = (page.active or page.activeChild) ? 'uk-active' : '' %}
+        {% set has_children = page.children.visible.count > 0 %}
+        <li class="{{ dropdown_enabled and has_children ? 'uk-parent ' : '' }}{{ is_active }}">
+            <a href="{{ page.url }}">
+                {{ nav.icon(page.header.icon) }}
+                {{ page.menu }}
+            </a>
+            {% if dropdown_enabled and has_children %}
+                <div class="uk-navbar-dropdown">
+                    <ul class="uk-nav uk-navbar-dropdown-nav">
+                        {{ nav.navbar_children(page) }}
+                    </ul>
+                </div>
+            {% endif %}
+        </li>
+    {% endfor %}
+{% endmacro %}
+
+{% macro offcanvas_list(page) %}
+    {% import _self as nav %}
+    {% for child in page.children.visible %}
+        {% set is_active = (child.active or child.activeChild) ? 'uk-active' : '' %}
+        <li class="{{ is_active }}">
+            <a href="{{ child.url }}">
+                {{ nav.icon(child.header.icon) }}
+                {{ child.menu }}
+            </a>
+            {% if child.children.visible.count > 0 %}
+                <ul class="uk-nav-sub">
+                    {{ nav.offcanvas_list(child) }}
+                </ul>
+            {% endif %}
+        </li>
+    {% endfor %}
+{% endmacro %}
+
+{% import _self as nav %}
+{% set dropdown_enabled = theme_config.dropdown.enabled %}
+{% set display_variant = variant|default('navbar') %}
+
+{% if display_variant == 'offcanvas' %}
+    <ul class="uk-nav uk-nav-default">
+        {{ nav.offcanvas_list(pages) }}
+        {% for mitem in site.menu %}
+            <li>
+                <a href="{{ mitem.url }}">
+                    {{ nav.icon(mitem.icon) }}
+                    {{ mitem.text }}
                 </a>
             </li>
         {% endfor %}
-    {% endif %}
-    {% for mitem in site.menu %}
-        <li>
-            <a href="{{ mitem.url }}">
-                {% if mitem.icon %}<i class="fa fa-{{ mitem.icon }}"></i>{% endif %}
-                {{ mitem.text }}
-            </a>
-        </li>
-    {% endfor %}
-</ul>
-
+    </ul>
+{% else %}
+    <ul class="uk-navbar-nav">
+        {{ nav.navbar_items(pages, dropdown_enabled) }}
+        {% for mitem in site.menu %}
+            <li>
+                <a href="{{ mitem.url }}">
+                    {{ nav.icon(mitem.icon) }}
+                    {{ mitem.text }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
