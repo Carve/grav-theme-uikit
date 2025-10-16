@@ -1,5 +1,5 @@
 # v2.0.0
-## TBD
+## 10/16/2025
 
 1. [](#new)
     * Target UIKit 3.24.2 with refreshed Twig templates and navigation markup.
